@@ -1,0 +1,9 @@
+[ What ]
+
+Small command line utilities:
+
+    * wcl  -  recursive `wc -l`
+
+[ License ]
+
+>= GPL v3.0
