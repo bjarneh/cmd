@@ -4,6 +4,26 @@ Small command line utilities:
 
     * wcl  -  recursive `wc -l`
 
+
+[ Install ]
+
+Compile the makefile:
+
+    8g _gdmk.go         [6g/5g pending architecture]
+    8l -o gdmk _gdmk.8  [6l/5l pending architecture]
+
+or:
+    gccgo -o gdmk _gdmk.go
+
+Use the 'install' target
+
+    ./gdmk install
+
+to remove/uninstall:
+
+    ./gdmk uninstall
+
+
 [ License ]
 
 >= GPL v3.0
