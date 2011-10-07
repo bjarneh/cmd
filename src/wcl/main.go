@@ -60,7 +60,7 @@ func main() {
     }else if handy.IsFile( root ) {
         counter.CountLines(false, root)
     }else{
-        log.Fatalf("[ERROR] '%s' neither file nor directory\n")
+        log.Fatalf("[ERROR] '%s' neither file nor directory\n", root)
     }
 
 }
