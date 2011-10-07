@@ -20,7 +20,7 @@ var getopt *gopt.GetOpt
 
 // default values for root directory and files that are worth counting :-)
 var (
-    root    = "src"
+    root    = "." // PWD
     match   = `(\.sh|\.php|\.c|\.h|\.st|\.scala|\.rb|\.html|\.css|\.java|\.py|\.cpp|\.pl|\.maude|\.go|\.rs)$`
 )
 
@@ -93,7 +93,7 @@ var helpMsg = `
 
   usage: wcl [OPTIONS] DIR
 
-  DIR defaults to src
+  DIR defaults to '.' ($PWD)
 
   options:
 
