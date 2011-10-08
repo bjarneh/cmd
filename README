@@ -24,6 +24,10 @@ to remove/uninstall:
     ./gdmk uninstall
 
 
+The install target will compile the binaries and
+move them to $HOME/bin with fallback to $GOBIN
+
+
 [ License ]
 
 >= GPL v3.0
