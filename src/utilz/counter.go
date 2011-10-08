@@ -10,38 +10,42 @@ import (
     "io/ioutil"
 )
 
-func CountLines(verbose bool, files ...string) (total int) {
+func NewLineFiles(verbose bool, ch chan string) (total int) {
 
-    var (
-        content []byte
-        err     os.Error
-        current int
-    )
+    var current int
 
-    for i := 0; i < len(files); i++ {
+    for file := range ch {
 
-        content, err = ioutil.ReadFile(files[i])
-
-        current = 0
-
-        if err == nil {
-            for _, b := range content {
-                if b == '\n' {
-                    current++
-                }
-            }
-        } else {
-            fmt.Fprintf(os.Stderr, "%s\n", err)
-        }
+        current = NewLineFile(file)
 
         if verbose {
-            fmt.Printf("match: %6d %s\n", current, files[i])
+            fmt.Printf("match: %6d %s\n", current, file)
         }
 
         total += current
     }
 
-    fmt.Printf("lines: %6d\n", total)
+    return
+}
+
+func NewLineFile(fname string) (nl int) {
+
+    var (
+        content []byte
+        err     os.Error
+    )
+
+    content, err = ioutil.ReadFile(fname)
+
+    if err == nil {
+        for _, b := range content {
+            if b == '\n' {
+                nl++
+            }
+        }
+    } else {
+        fmt.Fprintf(os.Stderr, "%s\n", err)
+    }
 
     return
 }

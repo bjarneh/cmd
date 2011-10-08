@@ -39,7 +39,13 @@ func init() {
 
 func main() {
 
-    args := getopt.Parse(os.Args[1:])
+    var(
+        args []string
+        total int
+        files chan string
+    )
+
+    args = getopt.Parse(os.Args[1:])
 
     switch {
     case getopt.IsSet("-list"):
@@ -55,14 +61,15 @@ func main() {
     }
 
     if handy.IsDir( root ) {
-        files := walker.PathWalk(root)
-        counter.CountLines(getopt.IsSet("-verbose"), files...)
+        files = walker.ChanWalk(root)
+        total = counter.NewLineFiles(getopt.IsSet("-verbose"), files)
     }else if handy.IsFile( root ) {
-        counter.CountLines(false, root)
+        total = counter.NewLineFile(root)
     }else{
         log.Fatalf("[ERROR] '%s' neither file nor directory\n", root)
     }
 
+    fmt.Printf("total: %6d\n", total)
 }
 
 func usage() {
