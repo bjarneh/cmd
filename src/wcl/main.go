@@ -20,10 +20,9 @@ var getopt *gopt.GetOpt
 
 // default values for root directory and files that are worth counting :-)
 var (
-    root    = "." // PWD
-    match   = `(\.sh|\.php|\.c|\.h|\.st|\.scala|\.rb|\.html|\.css|\.java|\.py|\.cpp|\.pl|\.maude|\.go|\.rs)$`
+    root  = "." // PWD
+    match = `(\.sh|\.php|\.c|\.h|\.st|\.scala|\.rb|\.html|\.css|\.java|\.py|\.cpp|\.pl|\.maude|\.go|\.rs)$`
 )
-
 
 func init() {
 
@@ -39,8 +38,8 @@ func init() {
 
 func main() {
 
-    var(
-        args []string
+    var (
+        args  []string
         total int
         files chan string
     )
@@ -60,12 +59,12 @@ func main() {
         root = args[0]
     }
 
-    if handy.IsDir( root ) {
+    if handy.IsDir(root) {
         files = walker.ChanWalk(root)
         total = counter.NewLineFiles(getopt.IsSet("-verbose"), files)
-    }else if handy.IsFile( root ) {
+    } else if handy.IsFile(root) {
         total = counter.NewLineFile(root)
-    }else{
+    } else {
         log.Fatalf("[ERROR] '%s' neither file nor directory\n", root)
     }
 

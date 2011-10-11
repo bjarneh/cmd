@@ -1,4 +1,4 @@
-/* Built : Thu Oct  6 22:47:54 UTC 2011 */
+/* Built : Tue Oct 11 12:36:46 UTC 2011 */
 //-------------------------------------------------------------------
 // Auto generated code, but you are encouraged to modify it ☺
 // Manual: http://godag.googlecode.com
@@ -67,7 +67,7 @@ var targets = map[string]*Target{
     },
 }
 
-var cmds = []string{"wcl",}
+var cmds = []string{"wcl","nog"}
 
 // install target
 func installDoFirst() {
@@ -694,6 +694,12 @@ var packages = []*Package{
         full:    "utilz/handy",
         output: "_obj/utilz/handy",
         files:  []string{"src/utilz/handy.go"},
+    },
+    &Package{
+        name:   "main",
+        full:    "nog/main",
+        output: "_obj/nog/main",
+        files:  []string{"src/nog/main.go"},
     },
     &Package{
         name:   "main",

@@ -184,3 +184,9 @@ func ModifyTimestamp(pathname string) (ts int64) {
     }
     return
 }
+
+func Check(e os.Error) {
+    if e != nil {
+        log.Fatalf("%s\n", e)
+    }
+}
