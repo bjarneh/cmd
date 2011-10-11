@@ -32,7 +32,7 @@ func init() {
     getopt.BoolOption("-h -help --help help")
     getopt.BoolOption("-l -list --list")
     getopt.BoolOption("-v -verbose --verbose")
-    getopt.StringOption("-m -m= -match -match= --match --match=")
+    getopt.StringOptionFancy("-m --match")
 
     addMatchFunc(match)
 }
