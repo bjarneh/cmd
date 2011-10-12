@@ -1,4 +1,4 @@
-/* Built : Wed Oct 12 01:08:04 UTC 2011 */
+/* Built : Wed Oct 12 04:08:00 UTC 2011 */
 //-------------------------------------------------------------------
 // Auto generated code, but you are encouraged to modify it ☺
 // Manual: http://godag.googlecode.com
@@ -65,6 +65,23 @@ var targets = map[string]*Target{
         },
         last:  uninstallDoLast,
     },
+    "update": &Target{
+        desc: "update makefile _gdmk.go",
+        first: updateDoFirst,
+        last: nil,
+    },
+}
+
+func updateDoFirst() {
+
+    require("gd", "http://godag.googlecode.com")
+
+    cmd := []string{"gd", "-gdmk", "_gdmk.go"}
+
+    say.Println(strings.Join(cmd, " "))
+    run(cmd)
+
+    os.Exit(0)
 }
 
 var cmds = []string{"wcl","nog"}
@@ -103,7 +120,7 @@ func uninstallDoLast() {
 
 }
 
-// utility function for install/uninstall targets
+// utility functions
 func getLocation() (location string) {
 
     var(
@@ -124,6 +141,23 @@ func getLocation() (location string) {
 
     return location
 }
+
+func which(s string) string {
+    p, e := exec.LookPath(s)
+    if e == nil {
+        return p
+    }
+    return ""
+}
+
+func require(binary, url string) {
+    if which(binary) == "" {
+        fmt.Println("\nIn order to execute this target you need: "+binary)
+        fmt.Printf("For instructions on how to install it see:\n\n%s\n\n", url)
+        os.Exit(1)
+    }
+}
+
 
 // PLAYGROUND STOP
 
