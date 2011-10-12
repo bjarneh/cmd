@@ -3,7 +3,7 @@
 Small command line utilities:
 
     * wcl  -  recursive `wc -l`
-    * nog  -  guess if (Norwegian) files are Latin-1 or UTF-8 (very basic)
+    * nog  -  guess Norwegian file encoding: Latin-1||UTF-8 (very basic)
 
 
 
