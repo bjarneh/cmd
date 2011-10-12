@@ -1,4 +1,4 @@
-/* Built : Tue Oct 11 12:36:46 UTC 2011 */
+/* Built : Wed Oct 12 01:08:04 UTC 2011 */
 //-------------------------------------------------------------------
 // Auto generated code, but you are encouraged to modify it ☺
 // Manual: http://godag.googlecode.com
@@ -696,16 +696,22 @@ var packages = []*Package{
         files:  []string{"src/utilz/handy.go"},
     },
     &Package{
-        name:   "main",
-        full:    "nog/main",
-        output: "_obj/nog/main",
-        files:  []string{"src/nog/main.go"},
+        name:   "guess",
+        full:    "utilz/guess",
+        output: "_obj/utilz/guess",
+        files:  []string{"src/utilz/guess.go"},
     },
     &Package{
         name:   "main",
         full:    "wcl/main",
         output: "_obj/wcl/main",
         files:  []string{"src/wcl/main.go"},
+    },
+    &Package{
+        name:   "main",
+        full:    "nog/main",
+        output: "_obj/nog/main",
+        files:  []string{"src/nog/main.go"},
     },
 
 }
