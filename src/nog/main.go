@@ -58,9 +58,9 @@ func report(fname string, result int) {
 var info = `
   nog - Norwegian ISO-8859-1 / UTF-8 guess
 
-  usage: nog [FILES]
+  usage: nog [OPTIONS] [FILES]
 
   options:
     -h --help      :  print this menu and exit
-    -r --recursive :  guess encoding of files in directories
+    -r --recursive :  guess encoding recursively
 `
