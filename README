@@ -3,6 +3,8 @@
 Small command line utilities:
 
     * wcl  -  recursive `wc -l`
+    * nog  -  guess if (Norwegian) files are Latin-1 or UTF-8 (very basic)
+
 
 
 [ Install ]
