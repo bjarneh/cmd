@@ -1,4 +1,4 @@
-/* Built : Wed Oct 12 04:08:00 UTC 2011 */
+/* Built : 2012-03-29 07:13:25.992657 +0000 UTC */
 //-------------------------------------------------------------------
 // Auto generated code, but you are encouraged to modify it ☺
 // Manual: http://godag.googlecode.com
@@ -13,8 +13,9 @@ import (
     "compress/gzip"
     "fmt"
     "bytes"
+    "runtime"
     "regexp"
-    "exec"
+    "os/exec"
     "log"
     "flag"
     "path/filepath"
@@ -66,7 +67,7 @@ var targets = map[string]*Target{
         last:  uninstallDoLast,
     },
     "update": &Target{
-        desc: "update makefile _gdmk.go",
+        desc: "update makefile mk.go",
         first: updateDoFirst,
         last: nil,
     },
@@ -76,7 +77,7 @@ func updateDoFirst() {
 
     require("gd", "http://godag.googlecode.com")
 
-    cmd := []string{"gd", "-gdmk", "_gdmk.go"}
+    cmd := []string{"gd", "-gdmk", "mk.go"}
 
     say.Println(strings.Join(cmd, " "))
     run(cmd)
@@ -248,8 +249,8 @@ func init() {
     flag.BoolVar(&list, "list", false, "list targets for bash autocomplete")
 
     flag.Usage = func() {
-        fmt.Println("\n gdmk - makefile in pure go\n")
-        fmt.Printf(" usage: %s [OPTIONS] [TARGET]\n\n", os.Args[0])
+        fmt.Println("\n mk.go - makefile in pure go\n")
+        fmt.Println(" usage: go run mk.go [OPTIONS] [TARGET]\n")
         fmt.Println(" options:\n")
         fmt.Println("  -h --help         print this menu and exit")
         fmt.Println("  -B --backend      choose backend [gc,gccgo,express]")
@@ -271,6 +272,7 @@ func init() {
 }
 
 func initBackend() {
+
     switch backend {
     case "gc":
         n := archNum()
@@ -283,10 +285,34 @@ func initBackend() {
     default:
         log.Fatalf("[ERROR] unknown backend: %s\n", backend)
     }
+
+    if backend == "gc" {
+        goroot := os.Getenv("GOROOT")
+        if goroot == "" {
+            goroot = runtime.GOROOT()
+        }
+        goos   := os.Getenv("GOOS")
+        if goos == "" {
+            goos = runtime.GOOS
+        }
+        goarch := os.Getenv("GOARCH")
+        if goarch == "" {
+            goarch = runtime.GOARCH
+        }
+        stub    := goos + "_" + goarch
+        compiler = filepath.Join(goroot,"pkg","tool", stub ,compiler)
+        linker   = filepath.Join(goroot,"pkg","tool", stub ,linker)
+    }
 }
 
 func archNum() (n string) {
-    switch os.Getenv("GOARCH") {
+
+    goarch := os.Getenv("GOARCH")
+    if goarch == "" {
+        goarch = runtime.GOARCH
+    }
+
+    switch goarch {
     case "386":
         n = "8"
     case "arm":
@@ -294,7 +320,7 @@ func archNum() (n string) {
     case "amd64":
         n = "6"
     default:
-        log.Fatalf("[ERROR] unknown GOARCH: %s\n", os.Getenv("GOARCH"))
+        log.Fatalf("[ERROR] unknown GOARCH: %s\n", goarch)
     }
     return
 }
@@ -436,14 +462,12 @@ func link(pkgs []*Package) {
             argv = append(argv, pkgs[i].output)
         }
         if root != "" {
-            errs := make(chan os.Error)
-            collect := &collector{make([]string, 0), nil}
-            collect.filter = func(s string)bool{
-                return strings.HasSuffix(s, ".o")
-            }
-            filepath.Walk(root, collect, errs)
-            for i := 0; i < len(collect.files); i++ {
-                argv = append(argv, collect.files[i])
+            filter := func(s string) bool { 
+                return strings.HasSuffix(s, ".o") 
+            } 
+            files := PathWalk(root, filter) 
+            for i := 0; i < len(files); i++ { 
+                argv = append(argv, files[i]) 
             }
         }
     }else{
@@ -514,38 +538,34 @@ func goinstall() {
 // Utility types and functions
 //-------------------------------------------------------------------
 
-type collector struct{
-    files []string
-    filter func(string)bool
-}
+func PathWalk(root string, ok func(s string)bool) (files []string) {
 
-func (c *collector) VisitDir(pathname string, d *os.FileInfo) bool {
-    return true
-}
+    fn := func(p string, d os.FileInfo, e error) error{
 
-func (c *collector) VisitFile(pathname string, d *os.FileInfo) {
-    if c.filter != nil {
-        if c.filter(pathname) {
-            c.files = append(c.files, pathname)
+        if !d.IsDir() && ok(p) {
+            files = append(files, p)
         }
-    }else{
-        c.files = append(c.files, pathname)
+
+        return e
     }
+
+    filepath.Walk(root, fn)
+
+    return files
 }
+
 
 func emptyDir(pathname string) bool {
     if ! isDir(pathname) {
         return false
     }
-    errs := make(chan os.Error)
-    collect := &collector{make([]string, 0), nil}
-    filepath.Walk(pathname, collect, errs)
-    return len(collect.files) == 0
+    fn := func(s string)bool{ return true }
+    return len(PathWalk(pathname, fn)) == 0
 }
 
 func isDir(pathname string) bool {
     fileInfo, err := os.Stat(pathname)
-    if err == nil && fileInfo.IsDirectory() {
+    if err == nil && fileInfo.IsDir() {
         return true
     }
     return false
@@ -553,8 +573,8 @@ func isDir(pathname string) bool {
 
 func timestamp(s string) (int64, bool) {
     fileInfo, e := os.Stat(s)
-    if e == nil && fileInfo.IsRegular() {
-        return fileInfo.Mtime_ns, true
+    if e == nil {
+        return fileInfo.ModTime().UnixNano(), true
     }
     return 0, false
 }
@@ -584,13 +604,16 @@ func run(argv []string) {
 
 func isFile(pathname string) bool {
     fileInfo, err := os.Stat(pathname)
-    if err == nil && fileInfo.IsRegular() {
+    if err == nil {
+        if fileInfo.Mode() & os.ModeType != 0 {
+            return false
+        }
         return true
     }
     return false
 }
 
-func quitter(e os.Error) {
+func quitter(e error) {
     if e != nil {
         log.Fatalf("[ERROR] %s\n", e)
     }
@@ -609,7 +632,7 @@ func copyGzipByteBuffer(from []byte, to string, gzipFile bool){
 
 func copyGzip(from, to string, gzipFile bool) {
 
-    var err os.Error
+    var err error
     var fromFile *os.File
 
     fromFile, err = os.Open(from)
@@ -622,7 +645,7 @@ func copyGzip(from, to string, gzipFile bool) {
 
 func copyGzipReader(fromReader io.Reader, to string, gzipFile bool) {
 
-    var err os.Error
+    var err error
     var toFile io.WriteCloser
 
     toFile, err = os.Create(to)
@@ -712,12 +735,6 @@ var packages = []*Package{
         files:  []string{"src/utilz/walker.go"},
     },
     &Package{
-        name:   "gopt",
-        full:    "parse/gopt",
-        output: "_obj/parse/gopt",
-        files:  []string{"src/parse/gopt/gopt.go","src/parse/gopt/option.go"},
-    },
-    &Package{
         name:   "counter",
         full:    "utilz/counter",
         output: "_obj/utilz/counter",
@@ -728,6 +745,12 @@ var packages = []*Package{
         full:    "utilz/handy",
         output: "_obj/utilz/handy",
         files:  []string{"src/utilz/handy.go"},
+    },
+    &Package{
+        name:   "gopt",
+        full:    "parse/gopt",
+        output: "_obj/parse/gopt",
+        files:  []string{"src/parse/gopt/gopt.go","src/parse/gopt/option.go"},
     },
     &Package{
         name:   "guess",

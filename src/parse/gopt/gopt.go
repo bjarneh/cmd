@@ -1,6 +1,17 @@
-// © Knug Industries 2009 all rights reserved
-// GNU GENERAL PUBLIC LICENSE VERSION 3.0
-// Author bjarneh@ifi.uio.no
+//  Copyright © 2009 bjarneh
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package gopt
 
@@ -51,10 +62,10 @@ Usage:
 */
 
 import (
-    "strings"
     "log"
-    "os"
     "strconv"
+
+    "strings"
 )
 
 type GetOpt struct {
@@ -110,15 +121,19 @@ func (g *GetOpt) Get(o string) string {
     return sopt.values[0]
 }
 
-func (g *GetOpt) GetFloat32(o string) (float32, os.Error) {
-    return strconv.Atof32(g.Get(o))
+func (g *GetOpt) GetFloat32(o string) (float32, error) {
+    f, e := strconv.ParseFloat(g.Get(o), 32)
+    if e != nil {
+        return 0.0, e
+    }
+    return float32(f), nil
 }
 
-func (g *GetOpt) GetFloat64(o string) (float64, os.Error) {
-    return strconv.Atof64(g.Get(o))
+func (g *GetOpt) GetFloat64(o string) (float64, error) {
+    return strconv.ParseFloat(g.Get(o), 64)
 }
 
-func (g *GetOpt) GetInt(o string) (int, os.Error) {
+func (g *GetOpt) GetInt(o string) (int, error) {
     return strconv.Atoi(g.Get(o))
 }
 
@@ -298,8 +313,8 @@ func Convert(optstr string) (opts []string) {
 
     for i := 0; i < len(ops); i++ {
         // could be wierd UTF-8 char i.e. -ø -ł -Ħ ...
-        point := []int(ops[i])
-        if len(point) == 2 && point[0] == int('-') {
+        point := []rune(ops[i])
+        if len(point) == 2 && point[0] == rune('-') {
             convOps = append(convOps, ops[i]+"=")
         } else if len(point) > 3 && ops[i][:2] == "--" {
             convOps = append(convOps, ops[i]+"=")

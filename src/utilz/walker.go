@@ -1,6 +1,17 @@
-// © Knug Industries 2009 all rights reserved
-// GNU GENERAL PUBLIC LICENSE VERSION 3.0
-// Author bjarneh@ifi.uio.no
+//  Copyright © 2009 bjarneh
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package walker /* texas ranger */
 
@@ -17,68 +28,48 @@ import (
 var IncludeDir = func(p string) bool { return true }
 var IncludeFile = func(p string) bool { return true }
 
-type collect struct {
-    files []string
-}
+func PathWalk(root string) (files []string) {
 
-func newCollect() *collect {
-    c := new(collect)
-    c.files = make([]string, 0)
-    return c
-}
+    fn := func(p string, d os.FileInfo, e error) error {
 
-func (c *collect) VisitDir(path string, d *os.FileInfo) bool {
-    return IncludeDir(path)
-}
+        if d.IsDir() && !IncludeDir(p) {
+            return filepath.SkipDir
+        }
 
-func (c *collect) VisitFile(path string, d *os.FileInfo) {
-    if IncludeFile(path) {
-        c.files = append(c.files, path)
+        if !d.IsDir() && IncludeFile(p) {
+            files = append(files, p)
+        }
+
+        return e
     }
+
+    filepath.Walk(root, fn)
+
+    return files
 }
 
-func PathWalk(root string) []string {
-    c := newCollect()
-    errs := make(chan os.Error)
-    filepath.Walk(root, c, errs)
-    return c.files
-}
+func helper(root string, ch chan string) {
 
-// ChanWalk is a type of PathWalk which returns immediately and
-// spits out path-names through a channel, it requires a new
-// type; this is it :-)
+    fn := func(p string, d os.FileInfo, e error) error {
 
-type chanCollect struct {
-    files chan string
-}
+        if d.IsDir() && !IncludeDir(p) {
+            return filepath.SkipDir
+        }
 
-func newChanCollect() *chanCollect {
-    c := new(chanCollect)
-    c.files = make(chan string)
-    return c
-}
+        if !d.IsDir() && IncludeFile(p) {
+            ch <-p
+        }
 
-func (c *chanCollect) VisitDir(path string, d *os.FileInfo) bool {
-    return IncludeDir(path)
-}
-
-func (c *chanCollect) VisitFile(path string, d *os.FileInfo) {
-    if IncludeFile(path) {
-        c.files <- path
+        return e
     }
+
+    filepath.Walk(root, fn)
+
+    close(ch)
 }
 
-func helper(root string, cc *chanCollect) {
-    errs := make(chan os.Error)
-    filepath.Walk(root, cc, errs)
-    close(cc.files)
-}
-
-// Same as PathWalk part from returning path names in a channel,
-// note that this function returns immediatlely, most likely this is
-// what you want unless you need all path names at once..
-func ChanWalk(root string) chan string {
-    cc := newChanCollect()
-    go helper(root, cc)
-    return cc.files
+func ChanWalk(root string) (files chan string) {
+    ch := make(chan string)
+    go helper(root, ch)
+    return ch
 }

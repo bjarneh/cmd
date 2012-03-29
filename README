@@ -1,5 +1,6 @@
 [ What ]
 
+
 Small command line utilities:
 
     * wcl  -  recursive `wc -l`
@@ -9,25 +10,20 @@ Small command line utilities:
 
 [ Install ]
 
-Compile the makefile:
 
-    8g _gdmk.go         [6g/5g pending architecture]
-    8l -o gdmk _gdmk.8  [6l/5l pending architecture]
+    go run mk.go install
 
-or:
-    gccgo -o gdmk _gdmk.go
 
-Use the 'install' target
 
-    ./gdmk install
+[ Uninstall ]
 
-to remove/uninstall:
+    go run mk.go uninstall
 
-    ./gdmk uninstall
 
 
 The install target will compile the binaries and
 move them to $HOME/bin with fallback to $GOBIN
+
 
 
 [ License ]

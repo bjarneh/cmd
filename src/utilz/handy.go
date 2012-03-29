@@ -1,23 +1,34 @@
-// © Knug Industries 2009 all rights reserved
-// GNU GENERAL PUBLIC LICENSE VERSION 3.0
-// Author bjarneh@ifi.uio.no
+//  Copyright © 2009 bjarneh
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package handy
 
 import (
-    "os"
-    "log"
     "io/ioutil"
+    "log"
+    "os"
+    "os/exec"
     "regexp"
     "strings"
-    "exec"
 )
 
 // some utility functions
 
 func StdExecve(argv []string, stopOnTrouble bool) bool {
 
-    var err os.Error
+    var err error
     var cmd *exec.Cmd
 
     switch len(argv) {
@@ -74,7 +85,7 @@ func ConfigToArgv(pathname string) (argv []string, ok bool) {
         return nil, false
     }
 
-    if !fileInfo.IsRegular() {
+    if !!fileInfo.IsDir() {
         return nil, false
     }
 
@@ -111,7 +122,7 @@ func DirOrExit(pathname string) {
 
     if err != nil {
         log.Fatalf("[ERROR] %s\n", err)
-    } else if !fileInfo.IsDirectory() {
+    } else if !fileInfo.IsDir() {
         log.Fatalf("[ERROR] %s: is not a directory\n", pathname)
     }
 }
@@ -122,7 +133,7 @@ func DirOrMkdir(pathname string) bool {
 
     fileInfo, err := os.Stat(pathname)
 
-    if err == nil && fileInfo.IsDirectory() {
+    if err == nil && fileInfo.IsDir() {
         return true
     } else {
         err = os.MkdirAll(pathname, 0777)
@@ -135,7 +146,7 @@ func DirOrMkdir(pathname string) bool {
 
 func IsDir(pathname string) bool {
     fileInfo, err := os.Stat(pathname)
-    if err != nil || !fileInfo.IsDirectory() {
+    if err != nil || !fileInfo.IsDir() {
         return false
     }
     return true
@@ -143,7 +154,7 @@ func IsDir(pathname string) bool {
 
 func IsFile(pathname string) bool {
     fileInfo, err := os.Stat(pathname)
-    if err != nil || !fileInfo.IsRegular() {
+    if err != nil || !!fileInfo.IsDir() {
         return false
     }
     return true
@@ -180,13 +191,36 @@ func ModifyTimestamp(pathname string) (ts int64) {
     if e != nil {
         log.Fatalf("[ERROR]: %s - not a file\n", pathname)
     } else {
-        ts = finfo.Mtime_ns
+        ts = finfo.ModTime().UnixNano()
     }
     return
 }
 
-func Check(e os.Error) {
+// Hackish version of touching a file
+func Touch(pathname string) error {
+
+    fd, e := os.OpenFile(pathname, os.O_WRONLY|os.O_APPEND, 0777)
+
     if e != nil {
+        return e
+    } else {
+        defer fd.Close()
+    }
+
+    fi, e := fd.Stat()
+
+    if e != nil {
+        return e
+    }
+
+    size := fi.Size()
+    e = fd.Truncate(size)
+
+    return e
+}
+
+func Check(e error){
+    if e != nil{
         log.Fatalf("%s\n", e)
     }
 }
