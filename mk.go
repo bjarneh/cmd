@@ -1,4 +1,4 @@
-/* Built : 2012-04-07 18:49:21.436739 +0000 UTC */
+/* Built : 2012-08-15 13:27:42.645615 +0000 UTC */
 //-------------------------------------------------------------------
 // Auto generated code, but you are encouraged to modify it ☺
 // Manual: http://godag.googlecode.com
@@ -85,7 +85,7 @@ func updateDoFirst() {
     os.Exit(0)
 }
 
-var cmds = []string{"wcl","nog"}
+var cmds = []string{"wcl","nog","fnd"}
 
 // install target
 func installDoFirst() {
@@ -788,6 +788,12 @@ func (p *Package) compile() {
 
 var packages = []*Package{
     &Package{
+        name:   "handy",
+        full:    "utilz/handy",
+        output: "_obj/utilz/handy",
+        files:  []string{"src/utilz/handy.go"},
+    },
+    &Package{
         name:   "walker",
         full:    "utilz/walker",
         output: "_obj/utilz/walker",
@@ -800,12 +806,6 @@ var packages = []*Package{
         files:  []string{"src/utilz/counter.go"},
     },
     &Package{
-        name:   "handy",
-        full:    "utilz/handy",
-        output: "_obj/utilz/handy",
-        files:  []string{"src/utilz/handy.go"},
-    },
-    &Package{
         name:   "gopt",
         full:    "parse/gopt",
         output: "_obj/parse/gopt",
@@ -816,6 +816,12 @@ var packages = []*Package{
         full:    "utilz/guess",
         output: "_obj/utilz/guess",
         files:  []string{"src/utilz/guess.go"},
+    },
+    &Package{
+        name:   "main",
+        full:    "fnd/main",
+        output: "_obj/fnd/main",
+        files:  []string{"src/fnd/main.go"},
     },
     &Package{
         name:   "main",
