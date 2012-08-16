@@ -19,7 +19,6 @@ package main
 import(
     "os"
     "fmt"
-    "log"
     "regexp"
     "strings"
     "parse/gopt"
@@ -34,7 +33,6 @@ var(
     pattern = ""
 )
 
-/// walker.IncludeFile = func(s string) bool { return true }
 
 func main(){
 
@@ -44,15 +42,9 @@ func main(){
         printHelpAndExit()
     }
 
-    cwd, err := os.Getwd()
-
-    if err != nil {
-        log.Fatalf("%s\n", err)
-    }
-
     addFilter()
 
-    files := walker.ChanWalk(cwd)
+    files := walker.ChanWalk(".")
 
     for f := range files {
         fmt.Printf("%s\n", f)
