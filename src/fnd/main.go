@@ -107,7 +107,7 @@ func printHelpAndExit(){
 
     -h --help     print this menu and exit
     -r --regex    treat pattern as regular expression
-    -p --posix    treat pattern as posix regular expression
+    -p --posix    treat pattern as POSIX regular expression
     `
 
     fmt.Println(msg)
