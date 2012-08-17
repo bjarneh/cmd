@@ -5,6 +5,7 @@ Small command line utilities:
 
     * wcl  -  recursive `wc -l`
     * fnd  -  fast and simple find tool
+    * peg  -  simple pgrep alternative
     * nog  -  guess Norwegian file encoding: Latin-1||UTF-8 (very basic)
 
 

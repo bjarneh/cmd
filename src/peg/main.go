@@ -72,8 +72,15 @@ func main(){
 
 func printProcessInfo(files []os.FileInfo) {
 
+    root := "/proc"
+
+    // some processes may have died..
     for i := range files {
-        fmt.Printf("pid: %5s\n", files[i].Name())
+        cmdline := filepath.Join(root, files[i].Name(), "cmdline")
+        if handy.IsFile(cmdline) {
+            b := slurpStripNullByte(cmdline)
+            fmt.Printf("%5s - %s\n", files[i].Name(), string(b))
+        }
     }
 }
 
@@ -89,8 +96,6 @@ func matchFilter(dirs []os.FileInfo) (procs []os.FileInfo) {
             if matchOK( cmdline ) {
                 procs = append(procs, dirs[i])
             }
-        }else{
-            fmt.Printf("not a valid process: %s\n", dirs[i].Name())
         }
     }
 
@@ -136,7 +141,7 @@ func addRegexpFilter(){
     }
 
     matchOK = func(s string)bool{
-        b := slurp(s)
+        b := slurpStripNullByte(s)
         return reg.Match(b)
     }
 }
@@ -146,9 +151,19 @@ func addSimpleFilter(){
     patternBytes := []byte(pattern)
 
     matchOK = func(s string)bool{
-        b := slurp(s)
+        b := slurpStripNullByte(s)
         return bytes.Index(b, patternBytes) != -1
     }
+}
+
+func slurpStripNullByte(strpath string) (b []byte){
+    b = slurp(strpath)
+    for c := 0; c < len(b); c++ {
+        if b[c] == 0 {
+            b[c] = ' '
+        }
+    }
+    return b
 }
 
 func slurp(strpath string) (b []byte) {
