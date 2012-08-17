@@ -85,7 +85,7 @@ func updateDoFirst() {
     os.Exit(0)
 }
 
-var cmds = []string{"wcl","nog","fnd"}
+var cmds = []string{"wcl","nog","fnd","peg"}
 
 // install target
 func installDoFirst() {
