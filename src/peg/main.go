@@ -20,6 +20,7 @@ import(
     "os"
     "fmt"
     "regexp"
+    "strconv"
     "io/ioutil"
     "path/filepath"
     "bytes"
@@ -72,14 +73,15 @@ func main(){
 
 func printProcessInfo(files []os.FileInfo) {
 
-    root := "/proc"
+    root  := "/proc"
+    pid   := strconv.Itoa(os.Getpid())
 
     for i := range files {
         cmdline := filepath.Join(root, files[i].Name(), "cmdline")
         // some processes may have died..
-        if handy.IsFile(cmdline) {
+        if handy.IsFile(cmdline) && pid != files[i].Name() {
             b := slurpStripNullByte(cmdline)
-            fmt.Printf("%5s - %s\n", files[i].Name(), string(b))
+            fmt.Printf("%5s : %s\n", files[i].Name(), string(b))
         }
     }
 }
