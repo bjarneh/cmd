@@ -9,17 +9,14 @@ Small command line utilities:
     * nog  -  guess Norwegian file encoding: Latin-1||UTF-8 (very basic)
 
 
-
 [ Install ]
 
     go run mk.go install
 
 
-
 [ Uninstall ]
 
     go run mk.go uninstall
-
 
 
 The install target will compile the binaries and
