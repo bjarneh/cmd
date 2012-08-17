@@ -74,9 +74,9 @@ func printProcessInfo(files []os.FileInfo) {
 
     root := "/proc"
 
-    // some processes may have died..
     for i := range files {
         cmdline := filepath.Join(root, files[i].Name(), "cmdline")
+        // some processes may have died..
         if handy.IsFile(cmdline) {
             b := slurpStripNullByte(cmdline)
             fmt.Printf("%5s - %s\n", files[i].Name(), string(b))
