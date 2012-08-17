@@ -1,4 +1,4 @@
-/* Built : 2012-08-15 13:27:42.645615 +0000 UTC */
+/* Built : 2012-08-17 14:30:26.717607 +0000 UTC */
 //-------------------------------------------------------------------
 // Auto generated code, but you are encouraged to modify it ☺
 // Manual: http://godag.googlecode.com
@@ -816,6 +816,12 @@ var packages = []*Package{
         full:    "utilz/guess",
         output: "_obj/utilz/guess",
         files:  []string{"src/utilz/guess.go"},
+    },
+    &Package{
+        name:   "main",
+        full:    "peg/main",
+        output: "_obj/peg/main",
+        files:  []string{"src/peg/main.go"},
     },
     &Package{
         name:   "main",
