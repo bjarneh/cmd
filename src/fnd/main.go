@@ -30,6 +30,7 @@ var(
     help    = false
     regx    = false
     posix   = false
+    lower    = false
     pattern = ""
 )
 
@@ -67,8 +68,17 @@ func addFilter(){
 
 func addSimpleFilter(){
 
-    walker.IncludeFile = func(s string) bool {
-        return strings.Index(s, pattern) != -1
+    pattern_low := strings.ToLower(pattern)
+
+    if ! lower {
+        walker.IncludeFile = func(s string) bool {
+            return strings.Index(s, pattern) != -1
+        }
+    }else{
+        walker.IncludeFile = func(s string) bool {
+            s_low := strings.ToLower(s)
+            return strings.Index(s_low, pattern_low) != -1
+        }
     }
 
 }
@@ -98,6 +108,7 @@ func printHelpAndExit(){
   options:
 
     -h --help     print this menu and exit
+    -l --lower    match case insensitive
     -r --regex    treat pattern as regular expression
     -p --posix    treat pattern as POSIX regular expression
     `
@@ -113,6 +124,7 @@ func parseArgv(){
     getopt.BoolOption("-h -help --help")
     getopt.BoolOption("-r -regex --regex")
     getopt.BoolOption("-p -posix --posix")
+    getopt.BoolOption("-l -lower --lower")
 
     rest   := getopt.Parse(os.Args[1:])
 
@@ -126,6 +138,10 @@ func parseArgv(){
 
     if getopt.IsSet("-posix") {
         posix = true
+    }
+
+    if getopt.IsSet("-lower") {
+        lower = true
     }
 
     if len(rest) > 0 {
