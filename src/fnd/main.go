@@ -30,7 +30,8 @@ var(
     help    = false
     regx    = false
     posix   = false
-    lower    = false
+    lower   = false
+    include = false
     pattern = ""
 )
 
@@ -43,7 +44,8 @@ func main(){
         printHelpAndExit()
     }
 
-    addFilter()
+    addFileFilter()
+    addDirFilter()
 
     files := walker.ChanWalk(".")
 
@@ -53,7 +55,34 @@ func main(){
 
 }
 
-func addFilter(){
+func isVersionControlDir(s string) bool {
+
+    if strings.HasSuffix(s,".git") ||
+       strings.HasSuffix(s,".hg")  ||
+       strings.HasSuffix(s,".svn") ||
+       strings.HasSuffix(s,".bzr") ||
+       strings.HasSuffix(s,".cvs") {
+            return true
+       }
+
+    return false
+}
+
+func addDirFilter() {
+
+    if include {
+        return
+    }
+
+    walker.IncludeDir = func(s string)bool{
+        if isVersionControlDir(s) {
+            return false
+        }
+        return true
+    }
+}
+
+func addFileFilter(){
 
     if pattern == "" {
         return
@@ -111,6 +140,7 @@ func printHelpAndExit(){
     -l --lower    match case insensitive
     -r --regex    treat pattern as regular expression
     -p --posix    treat pattern as POSIX regular expression
+    -i --include  include version control dirs (.svn/.cvs/.hg/.git/.bzr)
     `
 
     fmt.Println(msg)
@@ -125,6 +155,7 @@ func parseArgv(){
     getopt.BoolOption("-r -regex --regex")
     getopt.BoolOption("-p -posix --posix")
     getopt.BoolOption("-l -lower --lower")
+    getopt.BoolOption("-i -include --include")
 
     rest   := getopt.Parse(os.Args[1:])
 
@@ -142,6 +173,10 @@ func parseArgv(){
 
     if getopt.IsSet("-lower") {
         lower = true
+    }
+
+    if getopt.IsSet("-include") {
+        include = true
     }
 
     if len(rest) > 0 {
