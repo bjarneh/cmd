@@ -1,4 +1,4 @@
-/* Built : 2012-08-17 14:30:26.717607 +0000 UTC */
+/* Built : 2013-03-29 05:37:57.01919 +0000 UTC */
 //-------------------------------------------------------------------
 // Auto generated code, but you are encouraged to modify it ☺
 // Manual: http://godag.googlecode.com
@@ -85,7 +85,7 @@ func updateDoFirst() {
     os.Exit(0)
 }
 
-var cmds = []string{"wcl","nog","fnd","peg"}
+var cmds = []string{"wcl","nog","fnd","peg","sen"}
 
 // install target
 func installDoFirst() {
@@ -788,28 +788,34 @@ func (p *Package) compile() {
 
 var packages = []*Package{
     &Package{
-        name:   "handy",
-        full:    "utilz/handy",
-        output: "_obj/utilz/handy",
-        files:  []string{"src/utilz/handy.go"},
-    },
-    &Package{
-        name:   "walker",
-        full:    "utilz/walker",
-        output: "_obj/utilz/walker",
-        files:  []string{"src/utilz/walker.go"},
-    },
-    &Package{
         name:   "counter",
         full:    "utilz/counter",
         output: "_obj/utilz/counter",
         files:  []string{"src/utilz/counter.go"},
     },
     &Package{
+        name:   "handy",
+        full:    "utilz/handy",
+        output: "_obj/utilz/handy",
+        files:  []string{"src/utilz/handy.go"},
+    },
+    &Package{
         name:   "gopt",
         full:    "parse/gopt",
         output: "_obj/parse/gopt",
         files:  []string{"src/parse/gopt/gopt.go","src/parse/gopt/option.go"},
+    },
+    &Package{
+        name:   "hashbytes",
+        full:    "sen/hashbytes",
+        output: "_obj/sen/hashbytes",
+        files:  []string{"src/sen/hashbytes.go"},
+    },
+    &Package{
+        name:   "walker",
+        full:    "utilz/walker",
+        output: "_obj/utilz/walker",
+        files:  []string{"src/utilz/walker.go"},
     },
     &Package{
         name:   "guess",
@@ -822,6 +828,12 @@ var packages = []*Package{
         full:    "peg/main",
         output: "_obj/peg/main",
         files:  []string{"src/peg/main.go"},
+    },
+    &Package{
+        name:   "main",
+        full:    "sen/main",
+        output: "_obj/sen/main",
+        files:  []string{"src/sen/main.go"},
     },
     &Package{
         name:   "main",
