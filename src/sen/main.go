@@ -15,20 +15,18 @@
 
 package main
 
-
-import(
-    "os"
-    "io"
+import (
     "fmt"
-    "strings"
-    "sen/hashbytes"
+    "io"
+    "os"
     "parse/gopt"
+    "utilz/hashbytes"
+    "strings"
     "utilz/handy"
     "utilz/walker"
 )
 
-
-var(
+var (
     help       = false
     safe       = false
     recursive  = false
@@ -37,8 +35,7 @@ var(
     bufferSize = 4096
 )
 
-
-func main(){
+func main() {
 
     files := parseArgv()
 
@@ -63,16 +60,15 @@ func main(){
 
 }
 
+func convert(fname string) {
 
-func convert(fname string){
+    if handy.IsFile(fname) {
 
-    if handy.IsFile( fname ) {
+        convertFile(fname)
 
-        convertFile( fname )
+    } else if handy.IsDir(fname) {
 
-    } else if handy.IsDir( fname ) {
-
-        convertDir( fname )
+        convertDir(fname)
 
     } else {
 
@@ -82,42 +78,41 @@ func convert(fname string){
 
 }
 
-func convertDir( dirname string ) {
+func convertDir(dirname string) {
 
     if !recursive {
 
         errStr := "[WARNING] Ignoring: %s (see -recursive)\n"
         fmt.Fprintf(os.Stderr, errStr, dirname)
 
-    }else{
+    } else {
 
-        files := walker.ChanWalk( dirname )
+        files := walker.ChanWalk(dirname)
 
         for file := range files {
-            convertFile( file )
+            convertFile(file)
         }
 
     }
 }
 
+func convertFile(fname string) {
 
-func convertFile( fname string ) {
-
-    var(
+    var (
         outFname string
         action   string
     )
 
     infile, err := os.Open(fname)
-    handy.Check( err )
+    handy.Check(err)
     defer infile.Close()
 
     if strings.HasSuffix(fname, ".sen") {
-        outFname = fname[:len(fname) - 4]
-        action   = "decrypt"
-    }else{
+        outFname = fname[:len(fname)-4]
+        action = "decrypt"
+    } else {
         outFname = fname + ".sen"
-        action   = "encrypt"
+        action = "encrypt"
     }
 
     outfile, err := os.Create(outFname)
@@ -133,7 +128,7 @@ func convertFile( fname string ) {
 
     for {
 
-        n, err := infile.Read( buffer )
+        n, err := infile.Read(buffer)
 
         if n == 0 && err == io.EOF {
             break
@@ -142,7 +137,7 @@ func convertFile( fname string ) {
         }
 
         // we read some bytes encrypt them
-        cryptr.Xor( buffer[:n] )
+        cryptr.Xor(buffer[:n])
 
         _, err = outfile.Write(buffer[:n])
         if err != nil {
@@ -151,12 +146,11 @@ func convertFile( fname string ) {
 
     }
 
-    if ! safe {
+    if !safe {
         defer handy.Delete(fname, true) // dies on error
     }
 
 }
-
 
 func parseArgv() []string {
 
@@ -189,11 +183,11 @@ func parseArgv() []string {
         recursive = true
     }
 
-    if getopt.IsSet("-safe"){
+    if getopt.IsSet("-safe") {
         safe = true
     }
 
-    if getopt.IsSet("-buffer"){
+    if getopt.IsSet("-buffer") {
         bufferSize, err = getopt.GetInt("-buffer")
         if err != nil {
             die("Invalid int: '%s'\n", getopt.Get("-b"))
@@ -204,14 +198,12 @@ func parseArgv() []string {
 
 }
 
-
-func die(fm string, args ... interface{}){
+func die(fm string, args ...interface{}) {
     fmt.Fprintf(os.Stderr, fm, args...)
     os.Exit(1)
 }
 
-
-var helpMessage =`
+var helpMessage = `
   sen - (en|de)crypt files with SHA1-hash-xor-scheme
 
   usage: sen [OPTIONS] FILE(S)

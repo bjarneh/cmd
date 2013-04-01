@@ -15,13 +15,11 @@
 
 package hashbytes
 
-import(
-    "io"
-///     "fmt"
-    "hash"
+import (
     "crypto/sha1"
+    "hash"
+    "io"
 )
-
 
 type HashBytes struct {
     passwd   string
@@ -30,30 +28,14 @@ type HashBytes struct {
     sha1hash hash.Hash
 }
 
-
 func New(password string) *HashBytes {
 
     s := sha1.New()
     io.WriteString(s, password)
     b := s.Sum(nil)
 
-    return &HashBytes{ password, 0, b, s }
+    return &HashBytes{password, 0, b, s}
 }
-
-
-/// func (h *HashBytes) Fill(b []byte) {
-/// 
-///     for i := 0; i < len(b); i++ {
-/// 
-///         b[i] = h.bytes[h.pos]
-///         h.pos++
-/// 
-///         if h.pos >= len(h.bytes) {
-///             h.next()
-///         }
-///     }
-/// 
-/// }
 
 func (h *HashBytes) Xor(b []byte) {
 
@@ -69,9 +51,8 @@ func (h *HashBytes) Xor(b []byte) {
 
 }
 
-
-func (h *HashBytes) next(){
+func (h *HashBytes) next() {
     io.WriteString(h.sha1hash, h.passwd)
     h.bytes = h.sha1hash.Sum(nil)
-    h.pos   = 0
+    h.pos = 0
 }

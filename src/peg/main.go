@@ -15,32 +15,29 @@
 
 package main
 
-
-import(
-    "os"
+import (
+    "bytes"
     "fmt"
+    "io/ioutil"
+    "os"
+    "parse/gopt"
+    "path/filepath"
     "regexp"
     "strconv"
-    "io/ioutil"
-    "path/filepath"
-    "bytes"
-    "parse/gopt"
     "utilz/handy"
 )
 
-
-var(
+var (
     help    = false
     regx    = false
     posix   = false
     pattern = ""
     process = regexp.MustCompile("^[0-9]+$")
     // filters out desired processes
-    matchOK func(string)bool
+    matchOK func(string) bool
 )
 
-
-func main(){
+func main() {
 
     parseArgv()
 
@@ -48,7 +45,7 @@ func main(){
         printHelpAndExit()
     }
 
-    if ! handy.IsDir("/proc") {
+    if !handy.IsDir("/proc") {
         fmt.Fprintln(os.Stderr, "/proc is not a directory on this machine")
         fmt.Fprintln(os.Stderr, "that makes me sad... goodbye")
         os.Exit(1)
@@ -63,18 +60,17 @@ func main(){
         os.Exit(1)
     }
 
-    dirs  := processFilter(files)
+    dirs := processFilter(files)
     procs := matchFilter(dirs)
 
-    printProcessInfo( procs )
+    printProcessInfo(procs)
 
 }
 
-
 func printProcessInfo(files []os.FileInfo) {
 
-    root  := "/proc"
-    pid   := strconv.Itoa(os.Getpid())
+    root := "/proc"
+    pid := strconv.Itoa(os.Getpid())
 
     for i := range files {
         cmdline := filepath.Join(root, files[i].Name(), "cmdline")
@@ -86,16 +82,15 @@ func printProcessInfo(files []os.FileInfo) {
     }
 }
 
-
 func matchFilter(dirs []os.FileInfo) (procs []os.FileInfo) {
 
     root := "/proc"
 
     for i := range dirs {
-        status  := filepath.Join(root, dirs[i].Name(), "status")
+        status := filepath.Join(root, dirs[i].Name(), "status")
         cmdline := filepath.Join(root, dirs[i].Name(), "cmdline")
         if handy.IsFile(status) && handy.IsFile(cmdline) {
-            if matchOK( cmdline ) {
+            if matchOK(cmdline) {
                 procs = append(procs, dirs[i])
             }
         }
@@ -107,7 +102,7 @@ func matchFilter(dirs []os.FileInfo) (procs []os.FileInfo) {
 func processFilter(dirs []os.FileInfo) (procs []os.FileInfo) {
 
     for i := range dirs {
-        if process.MatchString( dirs[i].Name() ) {
+        if process.MatchString(dirs[i].Name()) {
             procs = append(procs, dirs[i])
         }
     }
@@ -115,50 +110,48 @@ func processFilter(dirs []os.FileInfo) (procs []os.FileInfo) {
     return procs
 }
 
-
-func addFilter(){
+func addFilter() {
 
     if pattern == "" {
-        matchOK = func(s string)bool{ return true }
+        matchOK = func(s string) bool { return true }
         return
     }
 
     if regx || posix {
         addRegexpFilter()
-    }else{
+    } else {
         addSimpleFilter()
     }
 
 }
 
-
-func addRegexpFilter(){
+func addRegexpFilter() {
 
     var reg *regexp.Regexp
 
     if posix {
         reg = regexp.MustCompilePOSIX(pattern)
-    }else{
+    } else {
         reg = regexp.MustCompile(pattern)
     }
 
-    matchOK = func(s string)bool{
+    matchOK = func(s string) bool {
         b := slurpStripNullByte(s)
         return reg.Match(b)
     }
 }
 
-func addSimpleFilter(){
+func addSimpleFilter() {
 
     patternBytes := []byte(pattern)
 
-    matchOK = func(s string)bool{
+    matchOK = func(s string) bool {
         b := slurpStripNullByte(s)
         return bytes.Index(b, patternBytes) != -1
     }
 }
 
-func slurpStripNullByte(strpath string) (b []byte){
+func slurpStripNullByte(strpath string) (b []byte) {
     b = slurp(strpath)
     for c := 0; c < len(b); c++ {
         if b[c] == 0 {
@@ -176,7 +169,6 @@ func slurp(strpath string) (b []byte) {
     return b
 }
 
-
 func readDir(dirname string) ([]os.FileInfo, error) {
     f, err := os.Open(dirname)
     if err != nil {
@@ -190,10 +182,9 @@ func readDir(dirname string) ([]os.FileInfo, error) {
     return list, nil
 }
 
+func printHelpAndExit() {
 
-func printHelpAndExit(){
-
-    var msg =`
+    var msg = `
   peg - pgrep alternative
 
   usage: peg [OPTIONS] pattern
@@ -209,7 +200,7 @@ func printHelpAndExit(){
     os.Exit(0)
 }
 
-func parseArgv(){
+func parseArgv() {
 
     getopt := gopt.New()
 
@@ -217,7 +208,7 @@ func parseArgv(){
     getopt.BoolOption("-r -regex --regex")
     getopt.BoolOption("-p -posix --posix")
 
-    rest   := getopt.Parse(os.Args[1:])
+    rest := getopt.Parse(os.Args[1:])
 
     if getopt.IsSet("-help") {
         help = true

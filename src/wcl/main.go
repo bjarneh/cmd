@@ -5,14 +5,14 @@
 package main
 
 import (
-    "os"
     "fmt"
     "log"
-    "regexp"
+    "os"
     "parse/gopt"
-    "utilz/walker"
-    "utilz/handy"
+    "regexp"
     "utilz/counter"
+    "utilz/handy"
+    "utilz/walker"
 )
 
 // option parser

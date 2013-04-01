@@ -15,18 +15,16 @@
 
 package main
 
-
-import(
-    "os"
+import (
     "fmt"
+    "os"
+    "parse/gopt"
     "regexp"
     "strings"
-    "parse/gopt"
     "utilz/walker"
 )
 
-
-var(
+var (
     help    = false
     regx    = false
     posix   = false
@@ -35,8 +33,7 @@ var(
     pattern = ""
 )
 
-
-func main(){
+func main() {
 
     parseArgv()
 
@@ -57,13 +54,13 @@ func main(){
 
 func isVersionControlDir(s string) bool {
 
-    if strings.HasSuffix(s,".git") ||
-       strings.HasSuffix(s,".hg")  ||
-       strings.HasSuffix(s,".svn") ||
-       strings.HasSuffix(s,".bzr") ||
-       strings.HasSuffix(s,".cvs") {
-            return true
-       }
+    if strings.HasSuffix(s, ".git") ||
+        strings.HasSuffix(s, ".hg") ||
+        strings.HasSuffix(s, ".svn") ||
+        strings.HasSuffix(s, ".bzr") ||
+        strings.HasSuffix(s, ".cvs") {
+        return true
+    }
 
     return false
 }
@@ -74,7 +71,7 @@ func addDirFilter() {
         return
     }
 
-    walker.IncludeDir = func(s string)bool{
+    walker.IncludeDir = func(s string) bool {
         if isVersionControlDir(s) {
             return false
         }
@@ -82,7 +79,7 @@ func addDirFilter() {
     }
 }
 
-func addFileFilter(){
+func addFileFilter() {
 
     if pattern == "" {
         return
@@ -90,20 +87,20 @@ func addFileFilter(){
 
     if regx || posix {
         addRegexFilter()
-    }else{
+    } else {
         addSimpleFilter()
     }
 }
 
-func addSimpleFilter(){
+func addSimpleFilter() {
 
     pattern_low := strings.ToLower(pattern)
 
-    if ! lower {
+    if !lower {
         walker.IncludeFile = func(s string) bool {
             return strings.Index(s, pattern) != -1
         }
-    }else{
+    } else {
         walker.IncludeFile = func(s string) bool {
             s_low := strings.ToLower(s)
             return strings.Index(s_low, pattern_low) != -1
@@ -112,13 +109,13 @@ func addSimpleFilter(){
 
 }
 
-func addRegexFilter(){
+func addRegexFilter() {
 
     var reg *regexp.Regexp
 
     if posix {
         reg = regexp.MustCompile(pattern)
-    }else{
+    } else {
         reg = regexp.MustCompilePOSIX(pattern)
     }
 
@@ -127,9 +124,9 @@ func addRegexFilter(){
     }
 }
 
-func printHelpAndExit(){
+func printHelpAndExit() {
 
-    var msg =`
+    var msg = `
   fnd - fast and simple find tool
 
   usage: fnd [OPTIONS] pattern
@@ -147,7 +144,7 @@ func printHelpAndExit(){
     os.Exit(0)
 }
 
-func parseArgv(){
+func parseArgv() {
 
     getopt := gopt.New()
 
@@ -157,7 +154,7 @@ func parseArgv(){
     getopt.BoolOption("-l -lower --lower")
     getopt.BoolOption("-i -include --include")
 
-    rest   := getopt.Parse(os.Args[1:])
+    rest := getopt.Parse(os.Args[1:])
 
     if getopt.IsSet("-help") {
         help = true

@@ -5,12 +5,12 @@
 package main
 
 import (
-    "os"
     "fmt"
+    "os"
+    "parse/gopt"
     "utilz/guess"
     "utilz/handy"
     "utilz/walker"
-    "parse/gopt"
 )
 
 var getopt *gopt.GetOpt

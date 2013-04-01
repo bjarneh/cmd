@@ -5,47 +5,47 @@
 package counter
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
+    "fmt"
+    "io/ioutil"
+    "os"
 )
 
 func NewLineFiles(verbose bool, ch chan string) (total int) {
 
-	var current int
+    var current int
 
-	for file := range ch {
+    for file := range ch {
 
-		current = NewLineFile(file)
+        current = NewLineFile(file)
 
-		if verbose {
-			fmt.Printf("match: %6d %s\n", current, file)
-		}
+        if verbose {
+            fmt.Printf("match: %6d %s\n", current, file)
+        }
 
-		total += current
-	}
+        total += current
+    }
 
-	return
+    return
 }
 
 func NewLineFile(fname string) (nl int) {
 
-	var (
-		content []byte
-		err     error
-	)
+    var (
+        content []byte
+        err     error
+    )
 
-	content, err = ioutil.ReadFile(fname)
+    content, err = ioutil.ReadFile(fname)
 
-	if err == nil {
-		for _, b := range content {
-			if b == '\n' {
-				nl++
-			}
-		}
-	} else {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-	}
+    if err == nil {
+        for _, b := range content {
+            if b == '\n' {
+                nl++
+            }
+        }
+    } else {
+        fmt.Fprintf(os.Stderr, "%s\n", err)
+    }
 
-	return
+    return
 }
