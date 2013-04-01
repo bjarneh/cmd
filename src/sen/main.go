@@ -21,7 +21,6 @@ import(
     "io"
     "fmt"
     "strings"
-///     "crypto/sha1"
     "sen/hashbytes"
     "parse/gopt"
     "utilz/handy"
@@ -61,11 +60,6 @@ func main(){
     for i := range files {
         convert(files[i])
     }
-
-///     hb := hashbytes.New("kuk")
-///     b  := make([]byte, sha1.Size * 2)
-///     hb.Fill( b )
-///     fmt.Printf("hb: %x\n", b);
 
 }
 
@@ -147,10 +141,8 @@ func convertFile( fname string ) {
             handy.Check(err)
         }
 
-        // we read some bytes
-        //fmt.Printf("before: %x\n", buffer);
+        // we read some bytes encrypt them
         cryptr.Xor( buffer[:n] )
-        //fmt.Printf("after : %x\n", buffer[:n]);
 
         _, err = outfile.Write(buffer[:n])
         if err != nil {
@@ -220,7 +212,7 @@ func die(fm string, args ... interface{}){
 
 
 var helpMessage =`
-  sen - (de|en)crypt files with SHA1-hash-xor-scheme
+  sen - (en|de)crypt files with SHA1-hash-xor-scheme
 
   usage: sen [OPTIONS] FILE(S)
 

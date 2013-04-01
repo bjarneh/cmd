@@ -41,19 +41,19 @@ func New(password string) *HashBytes {
 }
 
 
-func (h *HashBytes) Fill(b []byte) {
-
-    for i := 0; i < len(b); i++ {
-
-        b[i] = h.bytes[h.pos]
-        h.pos++
-
-        if h.pos >= len(h.bytes) {
-            h.next()
-        }
-    }
-
-}
+/// func (h *HashBytes) Fill(b []byte) {
+/// 
+///     for i := 0; i < len(b); i++ {
+/// 
+///         b[i] = h.bytes[h.pos]
+///         h.pos++
+/// 
+///         if h.pos >= len(h.bytes) {
+///             h.next()
+///         }
+///     }
+/// 
+/// }
 
 func (h *HashBytes) Xor(b []byte) {
 

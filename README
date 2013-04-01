@@ -7,6 +7,7 @@ Small command line utilities:
     * fnd  -  fast and simple find tool
     * peg  -  simple pgrep alternative
     * nog  -  guess Norwegian file encoding: Latin-1||UTF-8 (very basic)
+    * sen  -  encrypt/decrypt files with SHA1 xor scheme
 
 
 [ Install ]
