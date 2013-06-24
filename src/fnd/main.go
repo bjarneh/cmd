@@ -30,6 +30,7 @@ var (
     posix   = false
     lower   = false
     include = false
+    topdir  = "."
     pattern = ""
 )
 
@@ -44,7 +45,7 @@ func main() {
     addFileFilter()
     addDirFilter()
 
-    files := walker.ChanWalk(".")
+    files := walker.ChanWalk(topdir)
 
     for f := range files {
         fmt.Printf("%s\n", f)
@@ -135,6 +136,7 @@ func printHelpAndExit() {
 
     -h --help     print this menu and exit
     -l --lower    match case insensitive
+    -d --dir      directory to search (default: PWD)
     -r --regex    treat pattern as regular expression
     -p --posix    treat pattern as POSIX regular expression
     -i --include  include version control dirs (.svn/.cvs/.hg/.git/.bzr)
@@ -153,6 +155,7 @@ func parseArgv() {
     getopt.BoolOption("-p -posix --posix")
     getopt.BoolOption("-l -lower --lower")
     getopt.BoolOption("-i -include --include")
+    getopt.StringOptionFancy("-d --dir")
 
     rest := getopt.Parse(os.Args[1:])
 
@@ -162,6 +165,10 @@ func parseArgv() {
 
     if getopt.IsSet("-regex") {
         regx = true
+    }
+
+    if getopt.IsSet("-dir") {
+        topdir = getopt.Get("-dir");
     }
 
     if getopt.IsSet("-posix") {
