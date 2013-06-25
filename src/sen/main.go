@@ -204,7 +204,7 @@ func die(fm string, args ...interface{}) {
 }
 
 var helpMessage = `
-  sen - (en|de)crypt files with SHA1-hash-xor-scheme
+  sen - (en|de)crypt files with SHA1-hash-XOR-scheme
 
   usage: sen [OPTIONS] FILE(S)
 
