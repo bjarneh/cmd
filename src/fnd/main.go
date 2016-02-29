@@ -115,9 +115,9 @@ func addRegexFilter() {
     var reg *regexp.Regexp
 
     if posix {
-        reg = regexp.MustCompile(pattern)
-    } else {
         reg = regexp.MustCompilePOSIX(pattern)
+    } else {
+        reg = regexp.MustCompile(pattern)
     }
 
     walker.IncludeFile = func(s string) bool {
